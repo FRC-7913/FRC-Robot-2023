@@ -8,10 +8,7 @@
 name: Attempt Java build with Gradle
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  pull_request: # No values, will run any time there is a PR
 
 permissions:
   contents: read
