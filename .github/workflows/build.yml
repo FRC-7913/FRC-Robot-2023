@@ -8,7 +8,11 @@
 name: Attempt Java build with Gradle
 
 on:
-  pull_request: # No values, will run any time there is a PR
+  pull_request:
+    types:
+      -opened
+      -edited
+      -reopened
 
 permissions:
   contents: read
