@@ -79,6 +79,24 @@ test {
     useJUnitPlatform()
 }
 
+// Forces tests to run successfully to complete a build
+//tasks.getByPath("check").dependsOn("test")
+
+// Attaches the "check" action,
+// which will run formatting and tests,
+// to an attempted git commit,
+// meaning they must succeed for the commit to succeed
+
+task installGitHook(type: Copy) {
+    from new File(projectDir, 'pre-commit')
+    into { new File(projectDir, '.git/hooks') }
+    fileMode 0777
+}
+// Will run with the assemble action,
+// the earliest lifecycle action that Gradle performs
+assemble.dependsOn("installGitHook")
+
+
 dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()

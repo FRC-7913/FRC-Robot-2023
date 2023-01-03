@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# This will execute when a user tries to make a git commit
+
+# TIP FROM EXPERIENCE
+# if you modify this file, rebuild the project so the updated script is attached to git
+
+echo "Running git pre-commit tests"
+
+# KTLinter run
+echo "Running linter (cleaning up code to match style)"
+./gradlew ktlintFormat
+RESULT=$?
+[ $RESULT -ne 0 ] && echo "" && echo "Linter was unable to reformat something, please fix problems before trying to commit again"  && echo "See above errors for information or build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetFormat.xml for a log" && exit 1
+echo "Cleaning up code was successful"
+
+# Tests run
+echo "Running code tests"
+./gradlew test
+RESULT=$?
+[ $RESULT -ne 0 ] && echo "" && echo "Code failed tests, please fix problems before trying to commit again" && exit 1
+
+# Build run
+echo "Attempting a full build"
+./gradlew clean build
+RESULT=$?
+[ $RESULT -ne 0 ] && echo "" && echo "Build unsuccessful, please ensure the project can build before trying to commit again" && exit 1
+
+exit 0
