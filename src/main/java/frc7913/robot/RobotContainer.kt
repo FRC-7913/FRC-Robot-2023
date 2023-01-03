@@ -12,8 +12,7 @@ import frc7913.robot.commands.ExampleCommand
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-object RobotContainer
-{
+object RobotContainer {
     private val autoModeChooser = SendableChooser<AutoMode>().apply {
         AutoMode.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
@@ -25,15 +24,13 @@ object RobotContainer
      * @param optionName The name for the [autoModeChooser] option.
      * @param command The [Command] to run for this mode.
      */
-    private enum class AutoMode(val optionName: String, val command: Command)
-    {
+    private enum class AutoMode(val optionName: String, val command: Command) {
         // TODO: Replace with real auto modes and their corresponding commands
         CUSTOM_AUTO_1("Custom Auto Mode 1", ExampleCommand()),
         CUSTOM_AUTO_2("Custom Auto Mode 2", PrintCommand("Auto Mode 2")),
         ;
 
-        companion object
-        {
+        companion object {
             /** The default auto mode. */
             val default = CUSTOM_AUTO_1
         }
@@ -55,8 +52,7 @@ object RobotContainer
      * as [Joystick][edu.wpi.first.wpilibj.Joystick] or [XboxController][edu.wpi.first.wpilibj.XboxController],
      * and then passing it to a [JoystickButton][edu.wpi.first.wpilibj2.command.button.JoystickButton].
      */
-    private fun configureButtonBindings()
-    {
+    private fun configureButtonBindings() {
         // TODO: Add button to command mappings here.
         //       See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
     }
