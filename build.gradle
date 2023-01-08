@@ -58,6 +58,24 @@ compileKotlin {
     }
 }
 
+ktlint {
+    ignoreFailures = false
+    reporters {
+        reporter "plain"
+        reporter "checkstyle"
+        reporter "sarif"
+    }
+    // Add ktlint style problems that are unreasonable here
+    //    You can find their id in build/reports/ktlint/ktlintMainSourceSetCheck/ktlintMainSourceSetCheck.xml
+    //    in that specific error's "source" piece of its XML tag
+    disabledRules = [
+
+    ]
+}
+
+// Forces formatting whenever attempting to build the project
+//tasks.getByPath("check").dependsOn("ktlintFormat")
+
 test {
     useJUnitPlatform()
 }
