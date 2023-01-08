@@ -2,9 +2,10 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
     id "java"
-    id "org.jetbrains.kotlin.jvm" version "1.7.10"
-    id "edu.wpi.first.GradleRIO" version "2022.4.1"
+    id "org.jetbrains.kotlin.jvm" version "1.8.0"
+    id "edu.wpi.first.GradleRIO" version "2023.1.1"
     id "org.jlleitschuh.gradle.ktlint" version "11.0.0"
+    id "idea"
 }
 
 def javaVersion = JavaVersion.VERSION_11
@@ -121,3 +122,20 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+tasks.withType(JavaCompile) {
+    // Configure string concat to always inline compile
+    options.compilerArgs.add '-XDstringConcat=inline'
+}
+
+idea {
+    project {
+        // The project.sourceCompatibility setting is not always picked up, so we set explicitly
+        languageLevel = javaVersion
+    }
+    module {
+        // Improve development experience (and IDEA's capabilities) by having source & javadoc attached
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
