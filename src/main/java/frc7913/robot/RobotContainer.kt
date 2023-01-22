@@ -1,10 +1,14 @@
 package frc7913.robot
 
+import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.PrintCommand
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
+import frc7913.robot.subsystems.DriveTrain
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,6 +46,7 @@ object RobotContainer {
 
     init
     {
+        XboxController = CommandXboxController(TODO("Determine port for XboxController"))
         configureButtonBindings()
         SmartDashboard.putData("Auto choices", autoModeChooser)
     }
@@ -53,7 +58,16 @@ object RobotContainer {
      * and then passing it to a [JoystickButton][edu.wpi.first.wpilibj2.command.button.JoystickButton].
      */
     private fun configureButtonBindings() {
-        // TODO: Add button to command mappings here.
-        //       See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+        // Add button to command mappings here.
+        //  See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+
+        DriveTrain.defaultCommand = Commands.run(
+            { DriveTrain.driveTrain.tankDrive(-XboxController.leftY, -XboxController.rightY) },
+            DriveTrain
+        )
+
+        XboxController.a().onTrue(PrintCommand("A Button Pressed"))
     }
 }
+
+lateinit var XboxController: CommandXboxController
