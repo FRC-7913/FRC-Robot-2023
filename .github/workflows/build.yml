@@ -9,10 +9,7 @@ name: Attempt Java build with Gradle
 
 on:
   pull_request:
-    types:
-      -opened
-      -edited
-      -reopened
+    types: [opened, edited, reopened]
 
 permissions:
   contents: read
