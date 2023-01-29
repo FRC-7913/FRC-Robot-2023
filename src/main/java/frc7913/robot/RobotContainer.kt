@@ -1,6 +1,5 @@
 package frc7913.robot
 
-import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -46,7 +45,7 @@ object RobotContainer {
 
     init
     {
-        XboxController = CommandXboxController(TODO("Determine port for XboxController"))
+        XboxController = CommandXboxController(0)
         configureButtonBindings()
         SmartDashboard.putData("Auto choices", autoModeChooser)
     }
