@@ -7,5 +7,14 @@ package frc7913.robot
  * `const` definitions. Other constant types should use `val` definitions.
  */
 
-/** An example constant definition. */
-const val exampleMotorCanId = 1
+// Left side motors
+// Front
+const val leftFrontMotorPort = 2
+// Back
+const val leftRearMotorPort = 3
+
+// Right side motors
+// Front
+const val rightFrontMotorPort = 0
+// Back
+const val rightRearMotorPort = 1
