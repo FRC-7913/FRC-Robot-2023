@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
 import edu.wpi.first.wpilibj.motorcontrol.Spark
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
-object DriveTrain : SubsystemBase() {
+object DriveSubsystem : SubsystemBase() {
 
     private val leftLead = Spark(2)
     private val leftFollow = Spark(3)
