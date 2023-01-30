@@ -1,7 +1,11 @@
 package frc7913.robot.commands
 
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.PrintCommand
+import frc7913.robot.subsystems.DriveSubsystem
 
 enum class AutoModes(val optionName: String, val command: Command) {
 
@@ -28,6 +32,16 @@ enum class AutoModes(val optionName: String, val command: Command) {
         "Custom Auto Mode 2",
         PrintCommand("Auto Mode 2")
     ),
+    TEST_RAMSETE(
+        "Ramsete Controller Test",
+        DriveSubsystem.NavigateCommand(
+            start = Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
+
+            Translation2d(-0.5, 1.0),
+
+            end = Pose2d(2.0, 2.0, Rotation2d.fromDegrees(90.0)),
+        )
+    )
     ;
 
     companion object {
