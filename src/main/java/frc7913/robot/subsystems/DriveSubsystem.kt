@@ -7,13 +7,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 object DriveSubsystem : SubsystemBase() {
 
-    private val leftLead = Spark(2)
-    private val leftFollow = Spark(3)
-    private val leftSide = MotorControllerGroup(leftLead, leftFollow)
+    private val leftSide = MotorControllerGroup(
+        Spark(2), // Front
+        Spark(3) // Back
+    )
 
-    private val rightLead = Spark(0)
-    private val rightFollow = Spark(1)
-    private val rightSide = MotorControllerGroup(rightLead, rightFollow)
+    private val rightSide = MotorControllerGroup(
+        Spark(0), // Front
+        Spark(1) // Back
+    )
 
     init {
         leftSide.inverted = true
