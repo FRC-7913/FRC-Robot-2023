@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
-import frc7913.robot.subsystems.DriveTrain
+import frc7913.robot.subsystems.DriveSubsystem
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,9 +60,9 @@ object RobotContainer {
         // Add button to command mappings here.
         //  See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
-        DriveTrain.defaultCommand = Commands.run(
-            { DriveTrain.driveTrain.tankDrive(-XboxController.leftY, -XboxController.rightY) },
-            DriveTrain
+        DriveSubsystem.defaultCommand = Commands.run(
+            { DriveSubsystem.driveTrain.tankDrive(-XboxController.leftY, -XboxController.rightY) },
+            DriveSubsystem
         )
 
         XboxController.a().onTrue(PrintCommand("A Button Pressed"))
