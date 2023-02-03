@@ -1,5 +1,6 @@
 package frc7913.robot
 
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -65,7 +66,27 @@ object RobotContainer {
             DriveSubsystem
         )
 
-        XboxController.a().onTrue(PrintCommand("A Button Pressed"))
+        XboxController.a().whileTrue(
+            Commands.run(
+                {
+                    if (NetworkTableInstance.getDefault().getTable("limelight")
+                        .getEntry("tv").getDouble(0.0) == 1.0
+                    ) {
+                        val transform = LimelightTransform from NetworkTableInstance.getDefault()
+                            .getTable("limelight")
+                            .getEntry("camerapose_targetspace")
+                            .getDoubleArray( // This should return a value. If not, return the default
+                                LimelightTransform().toArray() // Gets the default values for the LimelightTransform
+                            )
+
+                        if (transform.translationZ < -1) {
+                            DriveSubsystem.driveTrain.arcadeDrive(0.2, 0.0)
+                        }
+                    }
+                },
+                DriveSubsystem
+            )
+        )
     }
 }
 
