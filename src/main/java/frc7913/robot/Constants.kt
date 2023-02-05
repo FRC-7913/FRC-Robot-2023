@@ -7,17 +7,13 @@ package frc7913.robot
  * `const` definitions. Other constant types should use `val` definitions.
  */
 
-// Left side motors
-// Front
-const val leftFrontMotorPort = 2
-// Back
-const val leftRearMotorPort = 3
+object PortConstants {
+    const val leftFrontMotor = 2
+    const val leftRearMotor = 3
 
-// Right side motors
-// Front
-const val rightFrontMotorPort = 0
-// Back
-const val rightRearMotorPort = 1
+    const val rightFrontMotor = 0
+    const val rightRearMotor = 1
+}
 
 // TODO: Put this declaration in a more relevant place
 data class LimelightTransform(
