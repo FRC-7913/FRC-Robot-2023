@@ -1,17 +1,30 @@
 package frc7913.robot.subsystems
 
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.controller.RamseteController
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
+import edu.wpi.first.math.trajectory.TrajectoryConfig
+import edu.wpi.first.math.trajectory.TrajectoryGenerator
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint
 import edu.wpi.first.wpilibj.ADXRS450_Gyro
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.interfaces.Gyro
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
 import edu.wpi.first.wpilibj.motorcontrol.Spark
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.RamseteCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc7913.robot.CharacterizationConstants
 import frc7913.robot.DriveConstants
 import frc7913.robot.PortConstants
+import frc7913.robot.RamseteConstants
+import frc7913.robot.TrajectoryConstants
 
 object DriveSubsystem : SubsystemBase() {
 
@@ -63,6 +76,63 @@ object DriveSubsystem : SubsystemBase() {
         odometry.update(
             gyro.rotation2d, leftEncoder.distance, rightEncoder.distance
         )
+    }
+
+    /**
+     * Navigates the robot along a given path
+     *
+     * @param start the starting position and orientation
+     * @param intermediate points for the robot to meet in between
+     * @param end the final position and orientation for the robot at the end of the path
+     */
+    fun navigate(
+        start: Pose2d,
+        vararg intermediate: Translation2d,
+        end: Pose2d,
+        voltageConstraints: DifferentialDriveVoltageConstraint = DifferentialDriveVoltageConstraint(
+            SimpleMotorFeedforward(
+                CharacterizationConstants.volts,
+                CharacterizationConstants.voltSecondsPerMeter,
+                CharacterizationConstants.voltSecondsSquaredPerMeter
+            ),
+            DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters),
+            10.0
+        ),
+        config: TrajectoryConfig = TrajectoryConfig(
+            TrajectoryConstants.maxSpeed,
+            TrajectoryConstants.maxAcceleration
+        ).setKinematics(DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters)),
+    ): Command {
+        config.addConstraint(voltageConstraints)
+
+        val trajectory = TrajectoryGenerator.generateTrajectory(
+            start,
+            intermediate.toList(),
+            end,
+            config
+        )
+
+        val ramseteCommand = RamseteCommand(
+            trajectory,
+            ::pose,
+            RamseteController(RamseteConstants.b, RamseteConstants.zeta),
+            SimpleMotorFeedforward(
+                CharacterizationConstants.volts,
+                CharacterizationConstants.voltSecondsPerMeter,
+                CharacterizationConstants.voltSecondsSquaredPerMeter
+            ),
+            DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters),
+            ::wheelSpeed,
+            PIDController(CharacterizationConstants.pDriveVel, 0.0, 0.0),
+            PIDController(CharacterizationConstants.pDriveVel, 0.0, 0.0),
+            ::tankDriveVolts,
+            DriveSubsystem
+        )
+
+        resetOdometry(start)
+
+        // Stop after the ramsete command finishes
+        return ramseteCommand.andThen({ tankDriveVolts(0.0, 0.0) }, DriveSubsystem)
     }
 
     /**
