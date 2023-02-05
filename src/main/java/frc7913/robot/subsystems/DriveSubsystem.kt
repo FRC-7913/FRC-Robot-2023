@@ -1,6 +1,8 @@
 package frc7913.robot.subsystems
 
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.wpilibj.ADXRS450_Gyro
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
@@ -61,5 +63,54 @@ object DriveSubsystem : SubsystemBase() {
         odometry.update(
             gyro.rotation2d, leftEncoder.distance, rightEncoder.distance
         )
+    }
+
+    /**
+     * Controls the left and right sides of the drive directly with voltages.
+     *
+     * @param leftVolts the commanded left output
+     * @param rightVolts the commanded right output
+     */
+    fun tankDriveVolts(leftVolts: Double, rightVolts: Double) {
+        leftSide.setVoltage(leftVolts)
+        rightSide.setVoltage(rightVolts)
+        driveTrain.feed()
+    }
+
+    /**The currently estimated pose of the robot*/
+    val pose: Pose2d get() = odometry.poseMeters
+
+    /**The current wheel speed*/
+    val wheelSpeed get() = DifferentialDriveWheelSpeeds(leftEncoder.rate, rightEncoder.rate)
+
+    /**The average encoder distance*/
+    val averageEncoderDistance get() = (leftEncoder.distance + rightEncoder.distance) / 2
+
+    /**The heading of the robot in degrees, from -180 to 180*/
+    val heading get() = gyro.rotation2d.degrees
+
+    /**The turn rate of the robot*/
+    val turnRate get() = -gyro.rate
+
+    /**
+     * Resets odometry to the specified pose
+     * @param pose The pose to reset to
+     */
+    fun resetOdometry(pose: Pose2d) {
+        resetEncoders()
+        odometry.resetPosition(
+            gyro.rotation2d, leftEncoder.distance, rightEncoder.distance, pose
+        )
+    }
+
+    /**Resets encoders to a currently read position of 0*/
+    fun resetEncoders() {
+        leftEncoder.reset()
+        rightEncoder.reset()
+    }
+
+    /**Zeros the heading of the robot*/
+    fun zeroHeading() {
+        gyro.reset()
     }
 }
