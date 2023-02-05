@@ -66,25 +66,36 @@ object RobotContainer {
             DriveSubsystem
         )
 
+        var distance: Double? = null
+
         XboxController.a().whileTrue(
-            Commands.run(
+            Commands.runOnce(
                 {
                     if (NetworkTableInstance.getDefault().getTable("limelight")
-                        .getEntry("tv").getDouble(0.0) == 1.0
+                        .getEntry("tv").getDouble(0.0) != 1.0
                     ) {
-                        val transform = LimelightTransform from NetworkTableInstance.getDefault()
-                            .getTable("limelight")
-                            .getEntry("camerapose_targetspace")
-                            .getDoubleArray( // This should return a value. If not, return the default
-                                LimelightTransform().toArray() // Gets the default values for the LimelightTransform
-                            )
-
-                        if (transform.translationZ < -1) {
-                            DriveSubsystem.driveTrain.arcadeDrive(0.2, 0.0)
-                        }
+                        distance = null
+                        return@runOnce
                     }
-                },
-                DriveSubsystem
+                    val transform = LimelightTransform from NetworkTableInstance.getDefault()
+                        .getTable("limelight")
+                        .getEntry("camerapose_targetspace")
+                        .getDoubleArray( // This should return a value. If not, return the default
+                            LimelightTransform().toArray() // Gets the default values for the LimelightTransform
+                        )
+                    distance = transform.translationZ
+                }
+            ).andThen(
+                Commands.run(
+                    {
+                        distance?.let {
+                            if (it > 1.0) {
+                                DriveSubsystem.driveTrain.arcadeDrive(0.3, 0.0)
+                            }
+                        }
+                    },
+                    DriveSubsystem
+                )
             )
         )
     }
