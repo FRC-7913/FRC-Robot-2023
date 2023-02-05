@@ -8,19 +8,36 @@
 echo "Running git pre-commit tests"
 
 # KTLinter run
-echo "Running linter (cleaning up code to match style)"
-./gradlew ktlintFormat
+./gradlew -q ktlintCheck > /dev/null 2>&1
 RESULT=$?
-[ $RESULT -ne 0 ] && echo "" && echo "Linter was unable to reformat something, please fix problems before trying to commit again"  && echo "See above errors for information or build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetFormat.xml for a log" && exit 1
-echo "Cleaning up code was successful"
+if [ $RESULT -ne 0 ]; then
+  echo ""
+  echo "Linter found problems, attempting to fix"
+  ./gradlew -q ktlintFormat
+  RESULT=$?
+  cd .. > /dev/null 2>&1
+  if [ $RESULT -ne 0 ]; then
+    echo ""
+    echo "Linter was unable to reformat something, please fix problems before trying to commit again"
+    echo "See above errors for information or $(pwd)/build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetFormat.xml for a log"
+    exit 1
+  fi
+  echo ""
+  echo "Code cleanup was successful"
+  echo "Add linter changes to commit and then rerun"
+  echo "See a list of all changes in $(pwd)/build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetCheck.xml"
+  exit 1
+fi
 
 # Tests run
+echo ""
 echo "Running code tests"
 ./gradlew test
 RESULT=$?
 [ $RESULT -ne 0 ] && echo "" && echo "Code failed tests, please fix problems before trying to commit again" && exit 1
 
 # Build run
+echo ""
 echo "Attempting a full build"
 ./gradlew clean build
 RESULT=$?
