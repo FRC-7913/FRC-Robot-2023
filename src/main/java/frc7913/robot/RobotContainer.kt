@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
 import frc7913.robot.subsystems.DriveSubsystem
+import frc7913.robot.subsystems.Limelight
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -77,11 +78,11 @@ object RobotContainer {
                         distance = null
                         return@runOnce
                     }
-                    val transform = LimelightTransform from NetworkTableInstance.getDefault()
+                    val transform = Limelight.Transform from NetworkTableInstance.getDefault()
                         .getTable("limelight")
                         .getEntry("camerapose_targetspace")
                         .getDoubleArray( // This should return a value. If not, return the default
-                            LimelightTransform().toArray() // Gets the default values for the LimelightTransform
+                            Limelight.Transform().toArray() // Gets the default values for the LimelightTransform
                         )
                     distance = transform.translationZ
                 }

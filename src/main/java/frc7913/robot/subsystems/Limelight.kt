@@ -1,3 +1,8 @@
+package frc7913.robot.subsystems
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase
+
+object Limelight : SubsystemBase() {
     data class Transform(
         val translationX: Double,
         val translationY: Double,
@@ -32,3 +37,4 @@
                 )
         }
     }
+}
