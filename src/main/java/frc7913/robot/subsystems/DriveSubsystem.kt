@@ -1,5 +1,6 @@
 package frc7913.robot.subsystems
 
+import com.kauailabs.navx.frc.AHRS
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
@@ -11,8 +12,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
 import edu.wpi.first.math.trajectory.TrajectoryConfig
 import edu.wpi.first.math.trajectory.TrajectoryGenerator
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint
-import edu.wpi.first.wpilibj.ADXRS450_Gyro
 import edu.wpi.first.wpilibj.Encoder
+import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.interfaces.Gyro
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
@@ -61,7 +62,10 @@ object DriveSubsystem : SubsystemBase() {
         DriveConstants.rightEncoderInverted,
     )
 
-    private val gyro: Gyro = ADXRS450_Gyro()
+    // The NavX sensor is an Altitude and Heading Reference System
+    private val navX = AHRS(SPI.Port.kMXP)
+
+    private val gyro: Gyro = navX
 
     init {
         leftEncoder.distancePerPulse = DriveConstants.encoderDistancePerPulse
