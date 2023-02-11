@@ -89,7 +89,7 @@ object DriveSubsystem : SubsystemBase() {
      * @param intermediate points for the robot to meet in between
      * @param end the final position and orientation for the robot at the end of the path
      */
-    fun navigate(
+    fun NavigateCommand(
         start: Pose2d,
         vararg intermediate: Translation2d,
         end: Pose2d,
