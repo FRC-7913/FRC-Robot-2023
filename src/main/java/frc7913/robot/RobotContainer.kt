@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import frc7913.robot.commands.ExampleCommand
+import frc7913.robot.commands.AutoModes
 import frc7913.robot.commands.bindXboxCommands
 
 /**
@@ -14,32 +14,14 @@ import frc7913.robot.commands.bindXboxCommands
  * subsystems, commands, and button mappings) should be declared here.
  */
 object RobotContainer {
-    private val autoModeChooser = SendableChooser<AutoMode>().apply {
-        AutoMode.values().forEach { addOption(it.optionName, it) }
-        setDefaultOption(AutoMode.default.optionName, AutoMode.default)
-    }
-
-    /**
-     * A enumeration of the available autonomous modes.
-     *
-     * @param optionName The name for the [autoModeChooser] option.
-     * @param command The [Command] to run for this mode.
-     */
-    private enum class AutoMode(val optionName: String, val command: Command) {
-        // TODO: Replace with real auto modes and their corresponding commands
-        CUSTOM_AUTO_1("Custom Auto Mode 1", ExampleCommand()),
-        CUSTOM_AUTO_2("Custom Auto Mode 2", PrintCommand("Auto Mode 2")),
-        ;
-
-        companion object {
-            /** The default auto mode. */
-            val default = CUSTOM_AUTO_1
-        }
+    private val autoModeChooser = SendableChooser<AutoModes>().apply {
+        AutoModes.values().forEach { addOption(it.optionName, it) }
+        setDefaultOption(AutoModes.default.optionName, AutoModes.default)
     }
 
     /** The command to run in autonomous. */
     val selectedAutonomousCommand: Command
-        get() = autoModeChooser.selected?.command ?: AutoMode.default.command
+        get() = autoModeChooser.selected?.command ?: AutoModes.default.command
 
     init
     {
