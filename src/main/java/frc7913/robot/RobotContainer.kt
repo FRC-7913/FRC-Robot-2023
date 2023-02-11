@@ -3,10 +3,9 @@ package frc7913.robot
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
-import frc7913.robot.subsystems.DriveSubsystem
+import frc7913.robot.commands.bindXboxCommands
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -56,19 +55,7 @@ object RobotContainer {
      * and then passing it to a [JoystickButton][edu.wpi.first.wpilibj2.command.button.JoystickButton].
      */
     private fun configureButtonBindings() {
-        // Add button to command mappings here.
-        //  See https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
-
-        DriveSubsystem.defaultCommand = Commands.run(
-            { DriveSubsystem.driveTrain.tankDrive(-XboxController.leftY, -XboxController.rightY) },
-            DriveSubsystem
-        )
-
-        XboxController.y().onTrue(Commands.runOnce({ println("-----") }))
-
-        XboxController.x().onTrue(Commands.runOnce({ DriveSubsystem.printEncoders() }))
-
-        XboxController.b().onTrue(Commands.runOnce({ DriveSubsystem.resetEncoders() }))
+        bindXboxCommands(XboxController)
     }
 }
 
