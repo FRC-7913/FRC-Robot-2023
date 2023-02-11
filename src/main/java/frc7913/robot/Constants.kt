@@ -14,8 +14,9 @@ object PortConstants {
     const val rightFrontMotor = 0
     const val rightRearMotor = 1
 
-    val leftEncoder: Pair<Int, Int> = TODO("Left encoder ports not configured")
-    val rightEncoder: Pair<Int, Int> = TODO("Right encoder ports not configured")
+    // Encoder A and Encoder B ports (in that order) seem to work with REV On-Shaft encoders
+    val leftEncoder: Pair<Int, Int> = Pair(1, 2)
+    val rightEncoder: Pair<Int, Int> = Pair(5, 6)
 }
 
 object DriveConstants {

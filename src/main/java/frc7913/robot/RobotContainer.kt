@@ -1,15 +1,12 @@
 package frc7913.robot
 
-import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
 import frc7913.robot.subsystems.DriveSubsystem
-import frc7913.robot.subsystems.Limelight
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,38 +64,11 @@ object RobotContainer {
             DriveSubsystem
         )
 
-        var distance: Double? = null
+        XboxController.y().onTrue(Commands.runOnce({ println("-----") }))
 
-        XboxController.a().whileTrue(
-            Commands.runOnce(
-                {
-                    if (NetworkTableInstance.getDefault().getTable("limelight")
-                        .getEntry("tv").getDouble(0.0) != 1.0
-                    ) {
-                        distance = null
-                        return@runOnce
-                    }
-                    val transform = Limelight.Transform from NetworkTableInstance.getDefault()
-                        .getTable("limelight")
-                        .getEntry("camerapose_targetspace")
-                        .getDoubleArray( // This should return a value. If not, return the default
-                            Limelight.Transform().toArray() // Gets the default values for the LimelightTransform
-                        )
-                    distance = transform.translationZ
-                }
-            ).andThen(
-                Commands.run(
-                    {
-                        distance?.let {
-                            if (it > 1.0) {
-                                DriveSubsystem.driveTrain.arcadeDrive(0.3, 0.0)
-                            }
-                        }
-                    },
-                    DriveSubsystem
-                )
-            )
-        )
+        XboxController.x().onTrue(Commands.runOnce({ DriveSubsystem.printEncoders() }))
+
+        XboxController.b().onTrue(Commands.runOnce({ DriveSubsystem.resetEncoders() }))
     }
 }
 

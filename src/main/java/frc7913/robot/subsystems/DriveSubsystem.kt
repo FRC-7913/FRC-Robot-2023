@@ -163,6 +163,14 @@ object DriveSubsystem : SubsystemBase() {
     val turnRate get() = -gyro.rate
 
     /**
+     * Runs two print commands giving the distance and rate of each encoder
+     */
+    fun printEncoders() {
+        println("Left distance is ${ leftEncoder.distance }, rate is ${leftEncoder.rate}")
+        println("Right distance is ${ rightEncoder.distance }, rate is ${rightEncoder.rate}")
+    }
+
+    /**
      * Resets odometry to the specified pose
      * @param pose The pose to reset to
      */
