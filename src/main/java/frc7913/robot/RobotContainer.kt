@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.PrintCommand
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc7913.robot.commands.ExampleCommand
+import frc7913.robot.subsystems.ArmSubsystem
 import frc7913.robot.subsystems.DriveSubsystem
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the [Robot]
@@ -67,9 +67,30 @@ object RobotContainer {
 
         XboxController.y().onTrue(Commands.runOnce({ println("-----") }))
 
-        XboxController.x().onTrue(Commands.runOnce({ DriveSubsystem.printEncoders() }))
+        // XboxController.x().onTrue(Commands.runOnce({ DriveSubsystem.printEncoders() }))
 
         XboxController.b().onTrue(Commands.runOnce({ DriveSubsystem.resetEncoders() }))
+
+        XboxController.a().onTrue(Commands.runOnce({ ArmSubsystem.setTargetPosition(ArmConstants.Positions.Home) }))
+
+        XboxController.x().onTrue(
+            Commands.runOnce(
+                {
+                    val currentPositionIndex = ArmConstants.Positions.values()
+                        .indexOf(
+                            ArmConstants.Positions.getFromPosition(ArmSubsystem.armSetpoint)
+                        )
+                    ArmSubsystem.setTargetPosition(
+                        try {
+                            ArmConstants.Positions.values()[currentPositionIndex]
+                        } catch (e: ArrayIndexOutOfBoundsException) { // If the element is at -1 (does not exist
+                            ArmConstants.Positions.Home
+                        }
+                    )
+                },
+                ArmSubsystem,
+            )
+        )
     }
 }
 
