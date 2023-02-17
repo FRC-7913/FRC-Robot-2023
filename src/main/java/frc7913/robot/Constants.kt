@@ -8,11 +8,13 @@ package frc7913.robot
  */
 
 object PortConstants {
-    const val leftFrontMotor = 2
-    const val leftRearMotor = 3
+    const val leftMotors = 0
 
-    const val rightFrontMotor = 0
-    const val rightRearMotor = 1
+    const val rightMotors = 1
+
+    const val armMotor = 2
+
+    const val gripperMotor = 3
 
     // Encoder A and Encoder B ports (in that order) seem to work with REV On-Shaft encoders
     val leftEncoder: Pair<Int, Int> = Pair(1, 2)

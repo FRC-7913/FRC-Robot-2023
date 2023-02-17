@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.interfaces.Gyro
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
 import edu.wpi.first.wpilibj.motorcontrol.Spark
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RamseteCommand
@@ -29,15 +28,9 @@ import frc7913.robot.TrajectoryConstants
 
 object DriveSubsystem : SubsystemBase() {
 
-    private val leftSide = MotorControllerGroup(
-        Spark(PortConstants.leftFrontMotor), // Front
-        Spark(PortConstants.leftRearMotor) // Back
-    )
+    private val leftSide = Spark(PortConstants.leftMotors)
 
-    private val rightSide = MotorControllerGroup(
-        Spark(PortConstants.rightFrontMotor), // Front
-        Spark(PortConstants.rightRearMotor) // Back
-    )
+    private val rightSide = Spark(PortConstants.rightMotors)
 
     init {
         leftSide.inverted = DriveConstants.leftMotorsInverted
@@ -85,6 +78,7 @@ object DriveSubsystem : SubsystemBase() {
     /**
      * Navigates the robot along a given path
      *
+     * @param start the starting position and orientation
      * @param start the starting position and orientation
      * @param intermediate points for the robot to meet in between
      * @param end the final position and orientation for the robot at the end of the path
