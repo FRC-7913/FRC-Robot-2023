@@ -49,29 +49,29 @@ object DriveConstants {
 }
 
 object ArmConstants {
-    const val kArmCanId = 5
+    const val armCanId = 5
 
-    const val kArmInverted = false
+    const val armInverted = false
 
-    const val kCurrentLimit = 40
-    const val kSoftLimitReverse = 0.0
-    const val kSoftLimitForward = 4.6
+    const val currentLimit = 40
+    const val softLimitReverse = 0.0
+    const val softLimitForward = 4.6
 
-    const val kArmGearRatio = 1.0 / (48.0 * 4.0)
+    const val armGearRatio = 1.0 / (48.0 * 4.0)
 
-    const val kPositionFactor =
-        kArmGearRatio * 2.0 * Math.PI // multiply SM value by this number and get arm position in radians
-    const val kVelocityFactor = kArmGearRatio * 2.0 * Math.PI / 60.0
+    const val positionFactor =
+        armGearRatio * 2.0 * Math.PI // multiply SM value by this number and get arm position in radians
+    const val velocityFactor = armGearRatio * 2.0 * Math.PI / 60.0
 
-    const val kArmFreeSpeed = 5676.0 * kVelocityFactor
+    const val armFreeSpeed = 5676.0 * velocityFactor
 
-    const val kArmZeroCosineOffset =
+    const val armZeroCosineOffset =
         -Math.PI / 6 // radians to add to converted arm position to get real-world arm position (starts at ~30deg angle)
-    val kArmFeedforward = ArmFeedforward(0.0, 0.4, 12.0 / kArmFreeSpeed, 0.0)
+    val armFeedforward = ArmFeedforward(0.0, 0.4, 12.0 / armFreeSpeed, 0.0)
 
-    val kArmPositionGains = PIDGains(0.6, 0.0, 0.0)
+    val armPositionGains = PIDGains(0.6, 0.0, 0.0)
 
-    val kArmMotionConstraint = TrapezoidProfile.Constraints(2.0, 2.0)
+    val armMotionConstraint = TrapezoidProfile.Constraints(2.0, 2.0)
 
     enum class Positions(val position: Double) {
         Home(0.0),
@@ -93,14 +93,14 @@ object ArmConstants {
 }
 
 object GripperConstants {
-    const val kGripperCanId = 6
+    const val gripperCanId = 6
 
-    const val kSoftLimitReverse = -34.0
-    const val kSoftLimitForward = 5.0
+    const val softLimitReverse = -34.0
+    const val softLimitForward = 5.0
 
-    const val kClosePosition = 0.0
-    const val kOpenPosition = -34.0
-    const val kSafePosition = -29.0
+    const val closePosition = 0.0
+    const val openPosition = -34.0
+    const val safePosition = -29.0
 
-    const val kCurrentLimit = 10
+    const val currentLimit = 10
 }

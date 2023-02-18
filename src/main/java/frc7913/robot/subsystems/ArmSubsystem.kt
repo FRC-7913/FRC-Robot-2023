@@ -15,22 +15,22 @@ import frc7913.robot.ArmConstants
 
 object ArmSubsystem : SubsystemBase() {
 
-    private val m_motor = CANSparkMax(ArmConstants.kArmCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val m_motor = CANSparkMax(ArmConstants.armCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     init {
         m_motor.inverted = false
-        m_motor.setSmartCurrentLimit(ArmConstants.kCurrentLimit)
+        m_motor.setSmartCurrentLimit(ArmConstants.currentLimit)
         m_motor.enableSoftLimit(SoftLimitDirection.kForward, true)
         m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true)
-        m_motor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.kSoftLimitForward.toFloat())
-        m_motor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.kSoftLimitReverse.toFloat())
+        m_motor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.softLimitForward.toFloat())
+        m_motor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.softLimitReverse.toFloat())
     }
 
     private val m_encoder: RelativeEncoder = m_motor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42)
 
     init {
-        m_encoder.positionConversionFactor = ArmConstants.kPositionFactor
-        m_encoder.velocityConversionFactor = ArmConstants.kVelocityFactor
+        m_encoder.positionConversionFactor = ArmConstants.positionFactor
+        m_encoder.velocityConversionFactor = ArmConstants.velocityFactor
     }
 
     private val m_controller: SparkMaxPIDController = m_motor.pidController
@@ -50,7 +50,7 @@ object ArmSubsystem : SubsystemBase() {
 
     /** Creates a new ArmSubsystem.  */
     init {
-        PIDGains.setSparkMaxGains(m_controller, ArmConstants.kArmPositionGains)
+        PIDGains.setSparkMaxGains(m_controller, ArmConstants.armPositionGains)
         m_motor.burnFlash()
 
         m_timer = Timer()
@@ -67,7 +67,7 @@ object ArmSubsystem : SubsystemBase() {
     private fun updateMotionProfile() {
         val state = TrapezoidProfile.State(m_encoder.getPosition(), m_encoder.getVelocity())
         val goal = TrapezoidProfile.State(m_setpoint, 0.0)
-        m_profile = TrapezoidProfile(ArmConstants.kArmMotionConstraint, goal, state)
+        m_profile = TrapezoidProfile(ArmConstants.armMotionConstraint, goal, state)
         m_timer.reset()
     }
 
@@ -78,8 +78,8 @@ object ArmSubsystem : SubsystemBase() {
         } else {
             m_profile!!.calculate(elapsedTime)
         }
-        feedforward = ArmConstants.kArmFeedforward.calculate(
-            m_encoder.getPosition() + ArmConstants.kArmZeroCosineOffset,
+        feedforward = ArmConstants.armFeedforward.calculate(
+            m_encoder.getPosition() + ArmConstants.armZeroCosineOffset,
             targetState!!.velocity
         )
         m_controller.setReference(targetState!!.position, CANSparkMax.ControlType.kPosition, 0, feedforward)
@@ -89,10 +89,10 @@ object ArmSubsystem : SubsystemBase() {
         // reset and zero out a bunch of automatic mode stuff so exiting manual mode happens cleanly and passively
         m_setpoint = m_encoder.getPosition()
         targetState = TrapezoidProfile.State(m_setpoint, 0.0)
-        m_profile = TrapezoidProfile(ArmConstants.kArmMotionConstraint, targetState, targetState)
+        m_profile = TrapezoidProfile(ArmConstants.armMotionConstraint, targetState, targetState)
         // update the feedforward variable with the newly zero target velocity
-        feedforward = ArmConstants.kArmFeedforward.calculate(
-            m_encoder.getPosition() + ArmConstants.kArmZeroCosineOffset,
+        feedforward = ArmConstants.armFeedforward.calculate(
+            m_encoder.getPosition() + ArmConstants.armZeroCosineOffset,
             targetState!!.velocity
         )
         m_motor.set(_power + feedforward / 12.0)
