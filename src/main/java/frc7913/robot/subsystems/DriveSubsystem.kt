@@ -20,17 +20,13 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RamseteCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc7913.robot.CharacterizationConstants
 import frc7913.robot.DriveConstants
-import frc7913.robot.PortConstants
-import frc7913.robot.RamseteConstants
-import frc7913.robot.TrajectoryConstants
 
 object DriveSubsystem : SubsystemBase() {
 
-    private val leftSide = Spark(PortConstants.leftMotors)
+    private val leftSide = Spark(DriveConstants.leftMotorsPort)
 
-    private val rightSide = Spark(PortConstants.rightMotors)
+    private val rightSide = Spark(DriveConstants.rightMotorsPort)
 
     init {
         leftSide.inverted = DriveConstants.leftMotorsInverted
@@ -45,13 +41,13 @@ object DriveSubsystem : SubsystemBase() {
     }
 
     private val leftEncoder = Encoder(
-        PortConstants.leftEncoder.first,
-        PortConstants.leftEncoder.second,
+        DriveConstants.leftEncoderPorts.first,
+        DriveConstants.leftEncoderPorts.second,
         DriveConstants.leftEncoderInverted,
     )
     private val rightEncoder = Encoder(
-        PortConstants.rightEncoder.first,
-        PortConstants.rightEncoder.second,
+        DriveConstants.rightEncoderPorts.first,
+        DriveConstants.rightEncoderPorts.second,
         DriveConstants.rightEncoderInverted,
     )
 
@@ -89,17 +85,17 @@ object DriveSubsystem : SubsystemBase() {
         end: Pose2d,
         voltageConstraints: DifferentialDriveVoltageConstraint = DifferentialDriveVoltageConstraint(
             SimpleMotorFeedforward(
-                CharacterizationConstants.volts,
-                CharacterizationConstants.voltSecondsPerMeter,
-                CharacterizationConstants.voltSecondsSquaredPerMeter
+                DriveConstants.volts,
+                DriveConstants.voltSecondsPerMeter,
+                DriveConstants.voltSecondsSquaredPerMeter
             ),
-            DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters),
+            DifferentialDriveKinematics(DriveConstants.trackWidthMeters),
             10.0
         ),
         config: TrajectoryConfig = TrajectoryConfig(
-            TrajectoryConstants.maxSpeed,
-            TrajectoryConstants.maxAcceleration
-        ).setKinematics(DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters)),
+            DriveConstants.maxSpeed,
+            DriveConstants.maxAcceleration
+        ).setKinematics(DifferentialDriveKinematics(DriveConstants.trackWidthMeters)),
     ): Command {
         config.addConstraint(voltageConstraints)
 
@@ -113,16 +109,16 @@ object DriveSubsystem : SubsystemBase() {
         val ramseteCommand = RamseteCommand(
             trajectory,
             ::pose,
-            RamseteController(RamseteConstants.b, RamseteConstants.zeta),
+            RamseteController(DriveConstants.ramseteB, DriveConstants.ramseteZeta),
             SimpleMotorFeedforward(
-                CharacterizationConstants.volts,
-                CharacterizationConstants.voltSecondsPerMeter,
-                CharacterizationConstants.voltSecondsSquaredPerMeter
+                DriveConstants.volts,
+                DriveConstants.voltSecondsPerMeter,
+                DriveConstants.voltSecondsSquaredPerMeter
             ),
-            DifferentialDriveKinematics(CharacterizationConstants.trackWidthMeters),
+            DifferentialDriveKinematics(DriveConstants.trackWidthMeters),
             ::wheelSpeed,
-            PIDController(CharacterizationConstants.pDriveVel, 0.0, 0.0),
-            PIDController(CharacterizationConstants.pDriveVel, 0.0, 0.0),
+            PIDController(DriveConstants.pDriveVel, 0.0, 0.0),
+            PIDController(DriveConstants.pDriveVel, 0.0, 0.0),
             ::tankDriveVolts,
             DriveSubsystem
         )
