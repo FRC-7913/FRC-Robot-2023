@@ -69,7 +69,7 @@ object ArmConstants {
         -Math.PI / 6 // radians to add to converted arm position to get real-world arm position (starts at ~30deg angle)
     val armFeedforward = ArmFeedforward(0.0, 0.4, 12.0 / armFreeSpeed, 0.0)
 
-    val armPositionGains = PIDGains(0.6, 0.0, 0.0)
+    val armPositionPIDGains = PIDGains(0.6, 0.0, 0.0)
 
     val armMotionConstraint = TrapezoidProfile.Constraints(2.0, 2.0)
 
@@ -103,4 +103,6 @@ object GripperConstants {
     const val safePosition = -29.0
 
     const val currentLimit = 10
+
+    val gripperPositionPIDGains = PIDGains(0.2, 0.0, 0.0)
 }

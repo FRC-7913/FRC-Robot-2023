@@ -8,47 +8,52 @@ import com.revrobotics.SparkMaxPIDController
 import com.revrobotics.SparkMaxRelativeEncoder
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc7913.lib.PIDGains
 import frc7913.robot.GripperConstants
 
 object GripperSubsystem : SubsystemBase() {
-    private val m_motor: CANSparkMax
-    private val m_encoder: RelativeEncoder
-    private val m_controller: SparkMaxPIDController
-    private var m_setpoint: Double
-    private var m_prevSetpoint = 0.0
+
+    private val motor = CANSparkMax(GripperConstants.gripperCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
+
+    init {
+        motor.inverted = false
+        motor.setSmartCurrentLimit(GripperConstants.currentLimit)
+        motor.enableSoftLimit(SoftLimitDirection.kForward, true)
+        motor.enableSoftLimit(SoftLimitDirection.kReverse, true)
+        motor.setSoftLimit(SoftLimitDirection.kForward, GripperConstants.softLimitForward.toFloat())
+        motor.setSoftLimit(SoftLimitDirection.kReverse, GripperConstants.softLimitReverse.toFloat())
+    }
+
+    private val encoder: RelativeEncoder =
+        motor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42)
+
+    private val controller: SparkMaxPIDController = motor.pidController
+    private var setpoint: Double
+    private var prevSetpoint = 0.0
 
     /** Creates a new ExampleSubsystem.  */
     init {
-        m_motor = CANSparkMax(GripperConstants.gripperCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
-        m_motor.inverted = false
-        m_motor.setSmartCurrentLimit(GripperConstants.currentLimit)
-        m_motor.enableSoftLimit(SoftLimitDirection.kForward, true)
-        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true)
-        m_motor.setSoftLimit(SoftLimitDirection.kForward, GripperConstants.softLimitForward.toFloat())
-        m_motor.setSoftLimit(SoftLimitDirection.kReverse, GripperConstants.softLimitReverse.toFloat())
-        m_encoder = m_motor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42)
-        m_controller = m_motor.pidController
-        // PIDGains.setSparkMaxGains(m_controller, GripperConstants.kPositionPIDGains)
-        m_motor.burnFlash()
-        m_setpoint = GripperConstants.closePosition
+        PIDGains.setSparkMaxGains(controller, GripperConstants.gripperPositionPIDGains)
+        motor.burnFlash()
+        setpoint = GripperConstants.closePosition
     }
 
     val isSafe: Boolean
-        get() = m_encoder.position > GripperConstants.safePosition
+        get() = encoder.position > GripperConstants.safePosition
 
     fun openGripper() {
-        m_setpoint = GripperConstants.openPosition
+        setpoint = GripperConstants.openPosition
     }
 
     fun closeGripper() {
-        m_setpoint = GripperConstants.closePosition
+        setpoint = GripperConstants.closePosition
     }
 
     override fun periodic() { // This method will be called once per scheduler run
-        if (m_setpoint != m_prevSetpoint) {
-            m_controller.setReference(m_setpoint, CANSparkMax.ControlType.kPosition)
+        if (setpoint != prevSetpoint) {
+            controller.setReference(setpoint, CANSparkMax.ControlType.kPosition)
         }
-        m_prevSetpoint = m_setpoint
+        prevSetpoint = setpoint
     }
 
     override fun simulationPeriodic() {
@@ -59,8 +64,8 @@ object GripperSubsystem : SubsystemBase() {
         super.initSendable(builder)
         builder.addDoubleProperty(
             "Setpoint",
-            { m_setpoint }
-        ) { `val`: Double -> m_setpoint = `val` }
-        builder.addDoubleProperty("Position", { m_encoder.position }, null)
+            { setpoint }
+        ) { `val`: Double -> setpoint = `val` }
+        builder.addDoubleProperty("Position", { encoder.position }, null)
     }
 }

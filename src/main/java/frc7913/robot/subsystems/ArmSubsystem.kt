@@ -15,71 +15,71 @@ import frc7913.robot.ArmConstants
 
 object ArmSubsystem : SubsystemBase() {
 
-    private val m_motor = CANSparkMax(ArmConstants.armCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
+    private val motor = CANSparkMax(ArmConstants.armCanId, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     init {
-        m_motor.inverted = false
-        m_motor.setSmartCurrentLimit(ArmConstants.currentLimit)
-        m_motor.enableSoftLimit(SoftLimitDirection.kForward, true)
-        m_motor.enableSoftLimit(SoftLimitDirection.kReverse, true)
-        m_motor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.softLimitForward.toFloat())
-        m_motor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.softLimitReverse.toFloat())
+        motor.inverted = false
+        motor.setSmartCurrentLimit(ArmConstants.currentLimit)
+        motor.enableSoftLimit(SoftLimitDirection.kForward, true)
+        motor.enableSoftLimit(SoftLimitDirection.kReverse, true)
+        motor.setSoftLimit(SoftLimitDirection.kForward, ArmConstants.softLimitForward.toFloat())
+        motor.setSoftLimit(SoftLimitDirection.kReverse, ArmConstants.softLimitReverse.toFloat())
     }
 
-    private val m_encoder: RelativeEncoder = m_motor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42)
+    private val encoder: RelativeEncoder = motor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42)
 
     init {
-        m_encoder.positionConversionFactor = ArmConstants.positionFactor
-        m_encoder.velocityConversionFactor = ArmConstants.velocityFactor
+        encoder.positionConversionFactor = ArmConstants.positionFactor
+        encoder.velocityConversionFactor = ArmConstants.velocityFactor
     }
 
-    private val m_controller: SparkMaxPIDController = m_motor.pidController
+    private val m_controller: SparkMaxPIDController = motor.pidController
 
-    var m_setpoint: Double = ArmConstants.Positions.Home.position
+    var setpoint: Double = ArmConstants.Positions.Home.position
         set(value) {
-            if (value != m_setpoint) {
+            if (value != setpoint) {
                 field = value
                 updateMotionProfile()
             }
         }
-    private var m_profile: TrapezoidProfile? = null
-    private val m_timer: Timer
+    private var profile: TrapezoidProfile? = null
+    private val timer: Timer
     private var targetState: TrapezoidProfile.State? = null
     private var feedforward = 0.0
     private var manualValue = 0.0
 
     /** Creates a new ArmSubsystem.  */
     init {
-        PIDGains.setSparkMaxGains(m_controller, ArmConstants.armPositionGains)
-        m_motor.burnFlash()
+        PIDGains.setSparkMaxGains(m_controller, ArmConstants.armPositionPIDGains)
+        motor.burnFlash()
 
-        m_timer = Timer()
-        m_timer.start()
-        m_timer.reset()
+        timer = Timer()
+        timer.start()
+        timer.reset()
 
         updateMotionProfile()
     }
 
     fun setTargetPosition(setpoint: ArmConstants.Positions) {
-        m_setpoint = setpoint.position
+        this.setpoint = setpoint.position
     }
 
     private fun updateMotionProfile() {
-        val state = TrapezoidProfile.State(m_encoder.getPosition(), m_encoder.getVelocity())
-        val goal = TrapezoidProfile.State(m_setpoint, 0.0)
-        m_profile = TrapezoidProfile(ArmConstants.armMotionConstraint, goal, state)
-        m_timer.reset()
+        val state = TrapezoidProfile.State(encoder.position, encoder.velocity)
+        val goal = TrapezoidProfile.State(setpoint, 0.0)
+        profile = TrapezoidProfile(ArmConstants.armMotionConstraint, goal, state)
+        timer.reset()
     }
 
     fun runAutomatic() {
-        val elapsedTime = m_timer.get()
-        targetState = if (m_profile!!.isFinished(elapsedTime)) {
-            TrapezoidProfile.State(m_setpoint, 0.0)
+        val elapsedTime = timer.get()
+        targetState = if (profile!!.isFinished(elapsedTime)) {
+            TrapezoidProfile.State(setpoint, 0.0)
         } else {
-            m_profile!!.calculate(elapsedTime)
+            profile!!.calculate(elapsedTime)
         }
         feedforward = ArmConstants.armFeedforward.calculate(
-            m_encoder.getPosition() + ArmConstants.armZeroCosineOffset,
+            encoder.position + ArmConstants.armZeroCosineOffset,
             targetState!!.velocity
         )
         m_controller.setReference(targetState!!.position, CANSparkMax.ControlType.kPosition, 0, feedforward)
@@ -87,15 +87,15 @@ object ArmSubsystem : SubsystemBase() {
 
     fun runManual(_power: Double) {
         // reset and zero out a bunch of automatic mode stuff so exiting manual mode happens cleanly and passively
-        m_setpoint = m_encoder.getPosition()
-        targetState = TrapezoidProfile.State(m_setpoint, 0.0)
-        m_profile = TrapezoidProfile(ArmConstants.armMotionConstraint, targetState, targetState)
+        setpoint = encoder.position
+        targetState = TrapezoidProfile.State(setpoint, 0.0)
+        profile = TrapezoidProfile(ArmConstants.armMotionConstraint, targetState, targetState)
         // update the feedforward variable with the newly zero target velocity
         feedforward = ArmConstants.armFeedforward.calculate(
-            m_encoder.getPosition() + ArmConstants.armZeroCosineOffset,
+            encoder.position + ArmConstants.armZeroCosineOffset,
             targetState!!.velocity
         )
-        m_motor.set(_power + feedforward / 12.0)
+        motor.set(_power + feedforward / 12.0)
         manualValue = _power
     }
 
@@ -107,10 +107,10 @@ object ArmSubsystem : SubsystemBase() {
 
     override fun initSendable(builder: SendableBuilder) {
         super.initSendable(builder)
-        builder.addDoubleProperty("Final Setpoint", { m_setpoint }, null)
-        builder.addDoubleProperty("Position", { m_encoder.getPosition() }, null)
-        builder.addDoubleProperty("Applied Output", { m_motor.getAppliedOutput() }, null)
-        builder.addDoubleProperty("Elapsed Time", { m_timer.get() }, null)
+        builder.addDoubleProperty("Final Setpoint", { setpoint }, null)
+        builder.addDoubleProperty("Position", { encoder.position }, null)
+        builder.addDoubleProperty("Applied Output", { motor.appliedOutput }, null)
+        builder.addDoubleProperty("Elapsed Time", { timer.get() }, null)
     /*builder.addDoubleProperty("Target Position", () -> targetState.position, null);
     builder.addDoubleProperty("Target Velocity", () -> targetState.velocity, null);*/builder.addDoubleProperty(
             "Feedforward",

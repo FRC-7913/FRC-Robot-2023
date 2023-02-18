@@ -78,7 +78,7 @@ object RobotContainer {
                 {
                     val currentPositionIndex = ArmConstants.Positions.values()
                         .indexOf(
-                            ArmConstants.Positions.getFromPosition(ArmSubsystem.m_setpoint)
+                            ArmConstants.Positions.getFromPosition(ArmSubsystem.setpoint)
                         )
                     ArmSubsystem.setTargetPosition(
                         try {
