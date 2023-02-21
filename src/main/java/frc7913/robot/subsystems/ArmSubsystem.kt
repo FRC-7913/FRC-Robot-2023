@@ -33,7 +33,7 @@ object ArmSubsystem : SubsystemBase() {
         encoder.velocityConversionFactor = ArmConstants.velocityFactor
     }
 
-    private val m_controller: SparkMaxPIDController = motor.pidController
+    private val controller: SparkMaxPIDController = motor.pidController
 
     var setpoint: Double = ArmConstants.Positions.Home.position
         set(value) {
@@ -50,7 +50,7 @@ object ArmSubsystem : SubsystemBase() {
 
     /** Creates a new ArmSubsystem.  */
     init {
-        PIDGains.setSparkMaxGains(m_controller, ArmConstants.armPositionPIDGains)
+        PIDGains.setSparkMaxGains(controller, ArmConstants.armPositionPIDGains)
         motor.burnFlash()
 
         timer = Timer()
@@ -82,7 +82,7 @@ object ArmSubsystem : SubsystemBase() {
             encoder.position + ArmConstants.armZeroCosineOffset,
             targetState!!.velocity
         )
-        m_controller.setReference(targetState!!.position, CANSparkMax.ControlType.kPosition, 0, feedforward)
+        controller.setReference(targetState!!.position, CANSparkMax.ControlType.kPosition, 0, feedforward)
     }
 
     fun runManual(_power: Double) {
@@ -119,6 +119,6 @@ object ArmSubsystem : SubsystemBase() {
         builder.addDoubleProperty("Manual Value", { manualValue }, null)
         // builder.addDoubleProperty("Setpoint", () -> m_setpoint, (val) -> m_setpoint = val);
         // builder.addBooleanProperty("At Setpoint", () -> atSetpoint(), null);
-        // addChild("Controller", m_controller);
+        // addChild("Controller", controller);
     }
 }
