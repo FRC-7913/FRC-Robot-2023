@@ -37,7 +37,7 @@ fun bindXboxCommands(xboxController: CommandXboxController) = xboxController.app
     rightBumper().onTrue(CycleArmPositionsCommand())
 
     DriveSubsystem.defaultCommand = Commands.run(
-        { DriveSubsystem.driveTrain.tankDrive(-xboxController.leftX, xboxController.rightX) },
+        { DriveSubsystem.driveTrain.tankDrive(-xboxController.leftY, xboxController.rightY) },
         DriveSubsystem
     )
 }
