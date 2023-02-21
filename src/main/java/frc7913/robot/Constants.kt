@@ -13,9 +13,11 @@ import frc7913.lib.PIDGains
 
 object DriveConstants {
 
-    const val leftMotorsPort = 0
+    const val leftFrontMotorCANPort = 2
+    const val leftRearMotorCANPort = 3
 
-    const val rightMotorsPort = 1
+    const val rightFrontMotorCANPort = 0
+    const val rightRearMotorCANPort = 1
 
     // Encoder A and Encoder B ports (in that order) seem to work with REV On-Shaft encoders
     val leftEncoderPorts: Pair<Int, Int> = Pair(1, 2)

@@ -1,6 +1,8 @@
 package frc7913.robot.subsystems
 
 import com.kauailabs.navx.frc.AHRS
+import com.revrobotics.CANSparkMax
+import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
@@ -16,7 +18,7 @@ import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.interfaces.Gyro
-import edu.wpi.first.wpilibj.motorcontrol.Spark
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RamseteCommand
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -24,9 +26,15 @@ import frc7913.robot.DriveConstants
 
 object DriveSubsystem : SubsystemBase() {
 
-    private val leftSide = Spark(DriveConstants.leftMotorsPort)
+    private val leftSide = MotorControllerGroup(
+        CANSparkMax(DriveConstants.leftFrontMotorCANPort, CANSparkMaxLowLevel.MotorType.kBrushed),
+        CANSparkMax(DriveConstants.leftRearMotorCANPort, CANSparkMaxLowLevel.MotorType.kBrushed)
+    )
 
-    private val rightSide = Spark(DriveConstants.rightMotorsPort)
+    private val rightSide = MotorControllerGroup(
+        CANSparkMax(DriveConstants.rightFrontMotorCANPort, CANSparkMaxLowLevel.MotorType.kBrushed),
+        CANSparkMax(DriveConstants.rightRearMotorCANPort, CANSparkMaxLowLevel.MotorType.kBrushed)
+    )
 
     init {
         leftSide.inverted = DriveConstants.leftMotorsInverted
